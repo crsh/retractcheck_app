@@ -8,6 +8,7 @@
 
 library("shiny")
 library("retractcheck")
+library("DT")
 
 createTempDir <- function(input) {
   repeat {
@@ -26,9 +27,14 @@ ui <- fluidPage(
   h1("retractcheck"),
   br(),
 
-  "Upload a file containing references with DOI to check whether corrections or retractions have been registered with openretractions.com.",
+  p("Upload a file containing references with DOI to check whether the ",
+  a("Open retractions", href = "http://openretractions.com"),
+  " database contains any correction or retraction notices. ",
+  em("Note, to our knowledge no complete database of corrections and retractions exists. "),
+  code("retractcheck"),
+  ", therefore, only yields unambiguous results for references for which it finds corrections or retractions."),
 
-  helpText("Powered by:", a("retractcheck", href = "https://github.com/libscie/retractcheck")),
+  helpText("Powered by the R-package", code(a("retractcheck", href = "https://github.com/libscie/retractcheck"))),
 
   hr(),
 
@@ -116,18 +122,18 @@ server <- function(input, output) {
     })
 
   # Summary table
-  output$summary <- renderTable({
-    if (is.null(input$files)) return(NULL)
-
-    tabSummary <- Results()
-
-
-    return(tabSummary)
-
-  })
+  # output$summary <- DT::renderTable({
+  #   if (is.null(input$files)) return(NULL)
+  #
+  #   tabSummary <- Results()
+  #
+  #
+  #   return(tabSummary)
+  #
+  # })
 
   # Detailed
-  output$results <- renderTable({
+  output$results <- DT::renderDataTable({
     if (is.null(input$files)) return(NULL)
 
     tabResults <- Results()
@@ -142,8 +148,8 @@ server <- function(input, output) {
   })
 
   output$result_table <- renderUI({
-    tableOutput("summary")
-    div(tableOutput("results"), style="font-size:80%; font-family: Helvetica Neue,Helvetica,Arial,sans-serif")
+    # DT::dataTableOutput("summary")
+    div(DT::dataTableOutput("results"), style="font-size:80%; font-family: Helvetica Neue,Helvetica,Arial,sans-serif")
   })
 }
 
